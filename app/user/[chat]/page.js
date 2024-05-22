@@ -5,6 +5,7 @@ import Input from "../../../components/input/page";
 import { useState, useEffect, useRef,  useCallback } from "react";
 import { io } from "socket.io-client";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 
 export default function ChatScreenPage(_conversationId) {
@@ -220,10 +221,10 @@ export default function ChatScreenPage(_conversationId) {
           <div className="w-[100%] border border-b-grey-500 h-[100px]">
             <div className="flex flex-1 justify-between p-1 px-3 w-full">
               <div className="flex m-1 p-1 justify-between">
-                <img
-                  src={Avatar}
+                <Image
+                  src="/avatar.jpg"
                   className="inline-block rounded-full border ring-2 ring-white w-[60px] h-[60px] rounded-full m-1"
-                  alt="avatar2"
+                  alt="avatar2" width={70} height={70}
                 />
                 <div>
                   <div className="ml-2 mt-4">

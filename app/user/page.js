@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import Card from "../../components/card";
 import Head from "../../components/heading";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function UserPage() {
-  const Avatar =
-    "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+  // const Avatar =
+  //   "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
 
   const [user, setUser] = useState(
     typeof window !== "undefined"
@@ -90,11 +91,11 @@ export default function UserPage() {
           <div className=" flex flex-1 p-2 w-full justify-between">
             <div className="flex mx-2 my-1">
               <div className="flex m-1">
-                <img
-                  src={Avatar}
-                  className="inline-block rounded-full ring-2 ring-white w-[55px] h-[55px]"
-                  alt="avatar2"
-                  style={{ border: "1px solid black", borderRadius: "50%" }}
+                <Image
+                  src="/avatar.jpg"
+                  className="inline-block rounded-full ring-2 ring-white w-[55px] h-[55px] "
+                  alt="avatar2" width={60} height={50}
+                  style={{ borderRadius: "50%" }}
                 />
               </div>
               <div className="mx-2 pt-2">
@@ -115,7 +116,6 @@ export default function UserPage() {
           <div className="w-[100%]">
             {users.map((user, index) => {
               let _conversationId = user?.receiverId + "-" + _USerID;
-
               return (
                 <div className=" w-[100%] " key={index}>
                   <div
@@ -125,10 +125,10 @@ export default function UserPage() {
                     }
                   >
                     <div className="flex m-4 w-[100px] ">
-                      <img
-                        src={Avatar}
+                      <Image
+                        src="/avatar.jpg"
                         className="inline-block rounded-full ring-2 ring-white w-[50px] h-[50px] rounded-1/2"
-                        alt="avatar2"
+                        alt="avatar2" width={50} height={50}
                       />
                     </div>
                     <div className="flex flex-col w-[60%] ">
@@ -137,6 +137,7 @@ export default function UserPage() {
                       <p style={{ fontSize: "12px", color: "grey" }}>
                         {_conversationId}
                       </p>
+
                       <p style={{ fontSize: "12px", color: "grey" }}>
                         {user["email"]}
                       </p>
