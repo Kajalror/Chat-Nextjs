@@ -3,7 +3,7 @@
 import { useClient } from 'next/client';
 import { Routes, Route  } from 'react-router-dom';
 import UserPage from "./user/page";
-import Form from "../components/form/page";
+import Form from '@/components/form/page';
 
 
 const ProtectedRoute = ({children, auth= false })=>{
@@ -24,6 +24,7 @@ const ProtectedRoute = ({children, auth= false })=>{
 
 export default function Home() {
   return (
+   
         <Routes>
           <Route path='/user' element={
           <ProtectedRoute auth = { true }>
