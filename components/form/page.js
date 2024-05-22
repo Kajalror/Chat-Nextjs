@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Input from "../input/page";
-// import Button from "../Button/page";
-import Button from "../button/page";
+import Button from "../btn/page";
 import { useRouter } from "next/navigation";
 
 const Form = ({ isSignInPage = true }) => {
