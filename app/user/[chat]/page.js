@@ -104,7 +104,6 @@ export default function ChatScreenPage(_conversationId) {
         if (res?.ok) {
           const resData = await res.json();
           const { conversation, receiver } = resData;
-
           setReceiverDetails(receiver);
           fetchMessages(conversationID, receiver);
           setLoading(false);
@@ -120,15 +119,19 @@ export default function ChatScreenPage(_conversationId) {
         console.error("Error checking conversation:", error);
       }
     };
-    if (isClient) {
+    // if (isClient) {
+    //   checkConversation();
+    // }
+    if (isClient && conversationID && user && fetchMessages && router) {
       checkConversation();
     }
-  }, [conversationID, isClient, router]);
+  // }, [conversationID, isClient]);
+}, [conversationID, isClient, user, router]);
 
 
   
 
-  const fetchMessages =  useCallback ( async(_conversationId, receiverDetails) => {
+  const fetchMessages =  useCallback( async(_conversationId, receiverDetails) => {
 
     setMessagesLoading(true);
     const res = await fetch(
