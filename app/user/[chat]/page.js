@@ -2,9 +2,10 @@
 
 import ChatCard from "@/components/chatcard";
 import Input from "../../../components/input/page";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef,  useCallback } from "react";
 import { io } from "socket.io-client";
 import { useRouter } from "next/navigation";
+
 
 export default function ChatScreenPage(_conversationId) {
   const Avatar =
@@ -79,7 +80,7 @@ export default function ChatScreenPage(_conversationId) {
         }));
       });
     }
-  }, [socket]);
+  }, [socket, user]);
 
   const messageRef = useRef(null);
 
@@ -121,12 +122,12 @@ export default function ChatScreenPage(_conversationId) {
     if (isClient) {
       checkConversation();
     }
-  }, [conversationID, isClient]);
+  }, [conversationID, isClient, router]);
 
 
   
 
-  const fetchMessages = async (_conversationId, receiverDetails) => {
+  const fetchMessages =  useCallback ( async(_conversationId, receiverDetails) => {
 
     setMessagesLoading(true);
     const res = await fetch(
@@ -138,13 +139,10 @@ export default function ChatScreenPage(_conversationId) {
         },
       }
     );
-    // console.log("response--", res);
     const resData = await res.json();
     setMessages(resData);
     setMessagesLoading(false);
-  };
-
-
+  }, [ user?.id]);
 
 
   const validateMessage = (message) => {
@@ -236,8 +234,6 @@ export default function ChatScreenPage(_conversationId) {
                       {receiverDetails && (
                         <>
                           <span> {receiverDetails?.fullName} </span>
-                            <br/>
-                          {/* <span> online status </span> */}
                           
                         </>
                       )}
