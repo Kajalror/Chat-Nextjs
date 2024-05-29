@@ -12,24 +12,26 @@ const Form = ({ isSignInPage = true }) => {
         password: ''
       });
 
+     
+
   const router = useRouter();
 
   useEffect(() => {
     console.log("Data after update:", data);
   }, [data]);
 
+ 
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     console.log("data: handleSubmit-  ", data);
   
     if (!data.email || !data.password || (!isSignInPage && !data.fullName)) {
       alert("Please fill all required fields");
       return;
     }
-
-    const token = localStorage.getItem('user:tokens');
-    console.log("token-0", token);
 
     try {
       const res = await fetch(
@@ -42,8 +44,8 @@ const Form = ({ isSignInPage = true }) => {
           body: JSON.stringify(data)
         }
       );
-        console.log("token 1", token);
-        console.log("token 3", res);
+       
+        console.log("login response---", res);
       
 
       if (!res.ok) {
@@ -54,12 +56,19 @@ const Form = ({ isSignInPage = true }) => {
       }
 
       const resData = await res.json();
-      console.log("token 2", resData?.user?.tokens);
+
+      // console.log("token 2", resData?.user?.tokens);
+     
 
       if (resData?.user && resData?.user?.tokens) {
-        localStorage.setItem('user:tokens', resData.user.tokens);
-        localStorage.setItem('user:details', JSON.stringify(resData.user));
-        router?.push("/user");
+        
+        localStorage.setItem('user:tokens', resData?.user?.tokens);
+        localStorage.setItem('user:details', JSON.stringify(resData?.user));
+        console.log("New user logged in:", resData?.user);
+
+        setTimeout(() => {
+          router?.push("/user");
+        }, 1000);       
       } else {
         alert("Unexpected response format!");
       }
@@ -73,7 +82,7 @@ const Form = ({ isSignInPage = true }) => {
     <div className="bg-[#f9faff] h-screen flex justify-center items-center">
       <div className=" bg-white w-[33%] h-[89%] shadow-lg rounded-lg flex flex-col justify-center items-center">
         <div className=" text-4xl font-extrabold">
-        Welcome {isSignInPage ? "Back" : ""}
+          Welcome {isSignInPage ? "Back" : ""}
         </div>
         <div className="text-xl font-light mb-8">
           {isSignInPage

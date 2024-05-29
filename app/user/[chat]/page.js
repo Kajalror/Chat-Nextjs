@@ -14,7 +14,7 @@ export default function ChatScreenPage(_conversationId) {
 
   const [user, setUser] = useState(
     typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user: details"))
+      ? JSON.parse(localStorage.getItem("user:details"))
       : null
   );
 
@@ -51,6 +51,7 @@ export default function ChatScreenPage(_conversationId) {
   useEffect(() => {
     setIsClient(true);
     const storedUser = localStorage.getItem("user: details");
+    
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -119,17 +120,12 @@ export default function ChatScreenPage(_conversationId) {
         console.error("Error checking conversation:", error);
       }
     };
-    // if (isClient) {
-    //   checkConversation();
-    // }
+    
     if (isClient && conversationID && user && fetchMessages && router) {
       checkConversation();
     }
   // }, [conversationID, isClient]);
 }, [conversationID, isClient, user, router]);
-
-
- 
 
 
 
