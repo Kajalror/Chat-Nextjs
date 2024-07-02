@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-// import Card from "../../components/card";
-// import Head from "../../components/heading";
 import Head from "./heading";
 import Card from "./card";
 import { useRouter } from "next/navigation";
@@ -26,7 +24,7 @@ export default function UserPage() {
   useEffect(() => {
     setIsClient(true);
     const storedUser = localStorage?.getItem('user:details');
-    // console.log("login user stored-- ", storedUser);
+    
 
     if (storedUser) {
         try {
