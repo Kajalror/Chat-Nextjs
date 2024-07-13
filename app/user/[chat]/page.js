@@ -69,15 +69,16 @@ export default function ChatScreenPage(_conversationId) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [fileLoading, setFileLoading] = useState(false); 
+  
 
-  const [offset, setOffset] = useState(0);
-  console.log("setOffset", offset);
+  // const [offset, setOffset] = useState(0);
+  // console.log("setOffset", offset);
 
-  const [limit, setLimit] = useState(10);
-  console.log("setLimit", limit);
+  // const [limit, setLimit] = useState(10);
+  // console.log("setLimit", limit);
 
-  const [MoreMessages, setMoreMessages] = useState(true); 
-  // console.log("setMoreMessages", MoreMessages);
+  // const [MoreMessages, setMoreMessages] = useState(true); 
+ 
 
 
   const handleFileChange = (event) => {
@@ -132,9 +133,9 @@ export default function ChatScreenPage(_conversationId) {
          
           setReceiverDetails(receiver);
           
-          // fetchMessages(conversationID, receiver);
+          fetchMessages(conversationID, receiver);
           // fetchMessages(conversationID, receiver, offset, limit);
-          fetchMessages(conversationID, resData.receiver, offset, limit);
+          // fetchMessages(conversationID, resData.receiver, offset, limit);
 
           setLoading(false);
 
@@ -152,7 +153,8 @@ export default function ChatScreenPage(_conversationId) {
     if (isClient && conversationID && user) {
       checkConversation();
     }
-}, [conversationID, isClient, user, router, offset, limit]);
+}, [conversationID, isClient, user, router]);
+// }, [conversationID, isClient, user, router, offset, limit]);
 
 
 
@@ -160,7 +162,7 @@ export default function ChatScreenPage(_conversationId) {
 
 
   
-const fetchMessages =  useCallback( async(_conversationId, receiverDetails,  offset, limit) => {
+const fetchMessages =  useCallback( async(_conversationId, receiverDetails ) => {
     try{
          // &offset=${offset}&limit=${limit}
       const res = await fetch(
@@ -179,45 +181,25 @@ const fetchMessages =  useCallback( async(_conversationId, receiverDetails,  off
       const resData = await res.json();
       console.log("res data-->>> ", resData);
       setMessages(resData.slice(Math.max(resData.length - 10, 0)));
-      if (resData.length < limit) {
-        setMoreMessages(false); 
-      }
+      // if (resData.length < limit) {
+      //   setMoreMessages(false); 
+      // }
     }catch(e){
       console.error("Error fetching messages:", e);
     }
   }, [ user?.id]);
 
- 
-
-  
-const loadMoreMessages = () => {
- 
-  if (MoreMessages) { 
-    console.log("Loading more messages...");
-    setOffset((prevOffset) => prevOffset + limit);
-  }
-  // fetchMessages(conversationID, receiverDetails, offset + limit, limit);
-};
+   
+// const loadMoreMessages = () => {
+//   if (MoreMessages) { 
+//     console.log("Loading more messages...");
+//     setOffset((prevOffset) => prevOffset + limit);
+//   } };
 
 // useEffect(() => {
-//   if (offset > 0 && MoreMessages) {
-//     fetchMessages(conversationID, receiverDetails, offset, limit);
-//   }
-// }, [offset, conversationID, receiverDetails, limit, MoreMessages]);
-
-useEffect(() => {
-  if (offset > 0) {
-    fetchMessages(conversationID, { id: receiverId }, offset, limit);
-  }
-}, [offset, conversationID, receiverId, fetchMessages]);
-
-// useEffect(() => {
-//   if (isClient && conversationID && user) {
-//     fetchMessages(conversationID, receiverDetails, offset, limit);
-//   }
-// }, [conversationID, isClient, user, offset, limit]);
-
-  
+//   if (offset > 0) {
+//     fetchMessages(conversationID, { id: receiverId }, offset, limit); }
+// }, [offset, conversationID, receiverId, fetchMessages]);
  
 
 
@@ -229,10 +211,9 @@ useEffect(() => {
     return alphabets?.test(message) && !containWord;
   };
 
- useEffect(() => {
 
-    socket.current = io("http://localhost:8011");
-
+ useEffect(() => { 
+    socket.current = io("http://localhost:8011"); 
     socket.current.on("connect", () => {
       console.log("Connected to socket server");
     });
@@ -245,15 +226,15 @@ useEffect(() => {
     };
   }, []);
 
-
-
  
-  const sendMessage = async (messages) => {
-
-    console.log("Send Message function called");
-
+  const sendMessage = async (messages) => { 
+    console.log("Send Message function called"); 
     setMessage("");
     console.log("Message state after clear:", message);
+    setSelectedFile(null);
+    setPreviewImage(null);
+    setFileLoading(false);
+    console.log("loading state after clear:");
 
     if (!validateMessage(message) || !message.trim() && !selectedFile) {
       console.error("Invalid message content  or no file selected");
@@ -266,8 +247,8 @@ useEffect(() => {
     setFileLoading(true);
     const formData = new FormData();
     formData.append("file", selectedFile);
-
-    try {
+   
+   try {
       const res = await fetch(`http://localhost:7000/api/upload`, {
         method: "POST",
         body: formData,
@@ -276,9 +257,10 @@ useEffect(() => {
       console.log("result---", resData)
       fileUrl = resData?.url;
       console.log("File uploaded successfully:", fileUrl);
+      setFileLoading(false);
     } catch (err) {
       console.error("Error uploading file:", err);
-      setFileLoading(false);
+      // setFileLoading(false);
       return;
     }
   }
@@ -317,9 +299,9 @@ useEffect(() => {
       console.log("res from msg api ------ ", resData);
       
       // setMessage("");
-      setSelectedFile(null);
-      setPreviewImage(null);
-      setFileLoading(false);
+      // setSelectedFile(null);
+      // setPreviewImage(null);
+      // setFileLoading(false);
       setMessages((prevMessages) => [ ...prevMessages ]);
      
       
@@ -375,7 +357,7 @@ useEffect(() => {
             className="w-full overflow-y-scroll shadow-sm m-auto p-2">
 
               <div className="flex justify-center">
-                {
+                {/* {
                   MoreMessages && (
                     <button 
                       className="mt-4 p-2 bg-blue-500 text-white rounded"
@@ -383,7 +365,7 @@ useEffect(() => {
                       Load More
                     </button>
                    )
-                }
+                } */}
 
               </div>
                 
@@ -395,9 +377,7 @@ useEffect(() => {
                 const isCurrentUserMessage = msg?.userId === user?.id;
                 // console.log("Message User ID:", user?.id);
                 // console.log("Current User ID:", msg?.userId);
-
                 return(
-
                 <div
                   key={index}
                   className={`message-bubble max-w-[50%] rounded-b-xl p-2 mb-3 border ${
