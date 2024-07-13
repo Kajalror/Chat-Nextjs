@@ -13,19 +13,21 @@ export default function UserPage() {
       ? JSON.parse(localStorage?.getItem('user:details'))
       : null
   );
+
+
   console.log("user --- ", user);
 
  
   const [isClient, setIsClient] = useState(false);
   const _USerID = user?.id;
+
   const [users, setUsers] = useState([]);  
+
   const Router = useRouter();
 
   useEffect(() => {
     setIsClient(true);
     const storedUser = localStorage?.getItem('user:details');
-    
-
     if (storedUser) {
         try {
             const parsedUser = JSON?.parse(storedUser);
@@ -36,7 +38,8 @@ export default function UserPage() {
               }
           } catch (error) {
             console.error("Error parsing stored user:", error);
-            localStorage.removeItem("user:details");  
+            localStorage.removeItem("user:details");
+            
             Router.replace("/users/sign_in");
           }
     }
@@ -62,14 +65,12 @@ export default function UserPage() {
     }
   }, []);
 
-  const Handle = async (_conversationId, _retailerId, _USerID) => {
+  const Handle = async ( _retailerId, _USerID) => {
     try {
       const loggedInUser = JSON.parse(localStorage?.getItem("user:details"));
+      // const loggedInUser = JSON.parse(sessionStorage?.getItem("user:details"));
       console.log("userDetails>>: ", loggedInUser);
-      if (!_conversationId) {
-        console.log("--handle conversation error --- ");
-        return;
-      }
+   
       // ${loggedInUser?.id}
       const response = await fetch(`http://localhost:7000/api/conversation`, {
         method: "POST",
@@ -79,17 +80,25 @@ export default function UserPage() {
         body: JSON.stringify({
           retailerId: _retailerId,
           userId: _USerID,
-          _conversationId: _conversationId,
         }),
-      });
-      console.log("API response : ", response);
-      console.log("API response status: ", response.status);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      if (_conversationId === _conversationId) {
-        Router.push(`/user/${_conversationId}`);
-      }
+      })
+      .then(resp => resp.json())
+      .then((responseData ) => {
+
+        console.log("API response : ", responseData?.conversationId );
+
+        Router.push(`/user/${responseData?.conversationId}`);
+
+      }).catch((err) => {
+
+        console.log("API err: ", err);
+      });;
+
+
+      
+      // if (_conversationId === _conversationId) {
+      //   Router.push(`/user/${_conversationId}`);
+      // }
     } catch (error) {
       console.error("Error:", error);
     }
@@ -105,9 +114,9 @@ export default function UserPage() {
 
   const handleLogout = () => {
     try{
-
       localStorage.removeItem("user:tokens");
       localStorage.removeItem("user:details");
+      console.log("User logged out");
       alert("LogOut!")
       Router.replace("/users/sign_in");
       // Router.push("/users/sign_in");
@@ -115,13 +124,15 @@ export default function UserPage() {
     catch(error){
       console.error("Logout failed:", error);
     }
+
   };
+  
 
   return (
     <>
       <Card>
         <Head>
-          <div className=" flex flex-1 p-2 w-full justify-between">
+          <div className=" row flex flex-1 p-2 w-full justify-between">
             <div className="flex mx-2 my-1">
               <div className="flex m-1">
                 <Image
@@ -137,6 +148,7 @@ export default function UserPage() {
                   {user?.email}
                 </p>
               </div>
+
             </div>
             <div className="pt-5 p-2 ">
               <button type="button" className="bg-purple-1 p-1" onClick={handleLogout}>
@@ -148,13 +160,13 @@ export default function UserPage() {
         <div className="flex flex-col w-[95%]  pl-5 ">
           <div className="w-[100%]">
             {users.map((otherUser, index) => {
-              let _conversationId = otherUser?.receiverId + "-" + _USerID;
+             
               return (
                 <div className=" w-[100%] " key={index}>
                   <div
                     className=" mt-3 flex border-b-2 cursor-pointer"
                     onClick={() =>
-                      Handle(_conversationId, otherUser?.receiverId, _USerID)
+                      Handle( otherUser?.receiverId, _USerID)
                     }
                   >
                     <div className="flex m-4 w-[100px] ">
@@ -168,7 +180,11 @@ export default function UserPage() {
                       <h3> {otherUser.fullName} </h3>
 
                       <p style={{ fontSize: "12px", color: "grey" }}>
-                        {_conversationId}
+                        {/* {_conversationId} */}
+                        {otherUser?.receiverId}
+                      </p>
+                      <p style={{ fontSize: "12px", color: "grey" }}>
+                       {_USerID}
                       </p>
 
                       <p style={{ fontSize: "12px", color: "grey" }}>

@@ -12,7 +12,16 @@ const Form = ({ isSignInPage = true }) => {
         password: ''
       });
 
+      const [user, setUser] = useState(null);
+      console.log("user form page-:", user);
      
+
+      useEffect(() => {
+        const storedUserDetails = localStorage.getItem("user:details");
+        if (storedUserDetails) {
+          setUser(JSON.parse(storedUserDetails));
+        }
+      }, []);
 
   const router = useRouter();
 
@@ -20,7 +29,6 @@ const Form = ({ isSignInPage = true }) => {
     console.log("Data after update:", data);
   }, [data]);
 
- 
 
 
   const handleSubmit = async (e) => {
@@ -32,7 +40,6 @@ const Form = ({ isSignInPage = true }) => {
       alert("Please fill all required fields");
       return;
     }
-
     try {
       const res = await fetch(
         `http://localhost:7000/api/${isSignInPage ? "login" : "register"}`,
@@ -54,21 +61,24 @@ const Form = ({ isSignInPage = true }) => {
         alert(`Error: ${res.status} - ${errorText}`);
         return;
       }
-
       const resData = await res.json();
 
       // console.log("token 2", resData?.user?.tokens);
      
 
       if (resData?.user && resData?.user?.tokens) {
-        
+        // localStorage.setItem("user", resData?.user?.tokens);
         localStorage.setItem('user:tokens', resData?.user?.tokens);
         localStorage.setItem('user:details', JSON.stringify(resData?.user));
+       
         console.log("New user logged in:", resData?.user);
 
+        setUser(resData?.user);
         setTimeout(() => {
           router?.push("/user");
-        }, 1000);       
+        }, 1000);
+
+        // router?.push("/user");
       } else {
         alert("Unexpected response format!");
       }
@@ -77,6 +87,8 @@ const Form = ({ isSignInPage = true }) => {
       alert("An error occurred while processing your request.");
     }
   };
+
+
 
   return (
     <div className="bg-[#f9faff] h-screen flex justify-center items-center">
