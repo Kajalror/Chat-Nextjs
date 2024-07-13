@@ -71,15 +71,7 @@ export default function ChatScreenPage(_conversationId) {
   const [fileLoading, setFileLoading] = useState(false); 
   
 
-  // const [offset, setOffset] = useState(0);
-  // console.log("setOffset", offset);
-
-  // const [limit, setLimit] = useState(10);
-  // console.log("setLimit", limit);
-
-  // const [MoreMessages, setMoreMessages] = useState(true); 
  
-
 
   const handleFileChange = (event) => {
     const file = event?.target?.files[0];
@@ -131,11 +123,8 @@ export default function ChatScreenPage(_conversationId) {
           const resData = await res.json();
           const { conversation, receiver } = resData;
          
-          setReceiverDetails(receiver);
-          
-          fetchMessages(conversationID, receiver);
-          // fetchMessages(conversationID, receiver, offset, limit);
-          // fetchMessages(conversationID, resData.receiver, offset, limit);
+          setReceiverDetails(receiver);          
+          fetchMessages(conversationID, receiver);         
 
           setLoading(false);
 
@@ -154,10 +143,6 @@ export default function ChatScreenPage(_conversationId) {
       checkConversation();
     }
 }, [conversationID, isClient, user, router]);
-// }, [conversationID, isClient, user, router, offset, limit]);
-
-
-
 
 
 
@@ -180,28 +165,14 @@ const fetchMessages =  useCallback( async(_conversationId, receiverDetails ) => 
       }
       const resData = await res.json();
       console.log("res data-->>> ", resData);
-      setMessages(resData.slice(Math.max(resData.length - 10, 0)));
-      // if (resData.length < limit) {
-      //   setMoreMessages(false); 
-      // }
+      setMessages(resData);
+     
     }catch(e){
       console.error("Error fetching messages:", e);
     }
   }, [ user?.id]);
 
    
-// const loadMoreMessages = () => {
-//   if (MoreMessages) { 
-//     console.log("Loading more messages...");
-//     setOffset((prevOffset) => prevOffset + limit);
-//   } };
-
-// useEffect(() => {
-//   if (offset > 0) {
-//     fetchMessages(conversationID, { id: receiverId }, offset, limit); }
-// }, [offset, conversationID, receiverId, fetchMessages]);
- 
-
 
   const validateMessage = (message) => {
     const alphabets = /^[A-Za-z\s]*$/;
@@ -228,13 +199,16 @@ const fetchMessages =  useCallback( async(_conversationId, receiverDetails ) => 
 
  
   const sendMessage = async (messages) => { 
+
     console.log("Send Message function called"); 
+    
     setMessage("");
     console.log("Message state after clear:", message);
+    
     setSelectedFile(null);
     setPreviewImage(null);
     setFileLoading(false);
-    console.log("loading state after clear:");
+  
 
     if (!validateMessage(message) || !message.trim() && !selectedFile) {
       console.error("Invalid message content  or no file selected");
@@ -281,7 +255,7 @@ const fetchMessages =  useCallback( async(_conversationId, receiverDetails ) => 
 
     socket.current.emit("message", newMessage);
 
-    // console.log("Message sent>>:",  newMessage);
+ 
 
     try {
       const res = await fetch(`http://localhost:7000/api/message`, {
@@ -355,20 +329,6 @@ const fetchMessages =  useCallback( async(_conversationId, receiverDetails ) => 
           <div
             style={{ height: "70vh" }}
             className="w-full overflow-y-scroll shadow-sm m-auto p-2">
-
-              <div className="flex justify-center">
-                {/* {
-                  MoreMessages && (
-                    <button 
-                      className="mt-4 p-2 bg-blue-500 text-white rounded"
-                      onClick={loadMoreMessages} >
-                      Load More
-                    </button>
-                   )
-                } */}
-
-              </div>
-                
 
 
             {
