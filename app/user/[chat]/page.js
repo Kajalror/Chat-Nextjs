@@ -69,8 +69,13 @@ export default function ChatScreenPage(_conversationId) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [fileLoading, setFileLoading] = useState(false); 
-  
 
+
+  const [currentPage, setCurrentPage] = useState(1);
+  console.log(" current page", currentPage);
+
+   const [allMessages, setAllMessages] = useState([]);
+  console.log("setAllMessages", allMessages);
  
 
   const handleFileChange = (event) => {
@@ -124,7 +129,7 @@ export default function ChatScreenPage(_conversationId) {
           const { conversation, receiver } = resData;
          
           setReceiverDetails(receiver);          
-          fetchMessages(conversationID, receiver);         
+          fetchMessages(conversationID, receiver);      
 
           setLoading(false);
 
@@ -149,7 +154,7 @@ export default function ChatScreenPage(_conversationId) {
   
 const fetchMessages =  useCallback( async(_conversationId, receiverDetails ) => {
     try{
-         // &offset=${offset}&limit=${limit}
+       
       const res = await fetch(
         `http://localhost:7000/api/message/${_conversationId}?senderId=${user?.id}&&receiverId=${receiverDetails?.id}`,
         {
@@ -165,7 +170,11 @@ const fetchMessages =  useCallback( async(_conversationId, receiverDetails ) => 
       }
       const resData = await res.json();
       console.log("res data-->>> ", resData);
-      setMessages(resData);
+      
+      // setMessages(prevMessages => [...resData, ...prevMessages]);
+      // setMessages(resData.slice(0, 10)); 
+      setAllMessages(resData);
+      setMessages(resData.slice(Math.max(resData.length - 10, 0)));
      
     }catch(e){
       console.error("Error fetching messages:", e);
@@ -239,6 +248,7 @@ const fetchMessages =  useCallback( async(_conversationId, receiverDetails ) => 
     }
   }
 
+
     if (!messages || !conversationID) {
       console.error("Invalid messages or conversationId");
       return;
@@ -277,13 +287,25 @@ const fetchMessages =  useCallback( async(_conversationId, receiverDetails ) => 
       // setPreviewImage(null);
       // setFileLoading(false);
       setMessages((prevMessages) => [ ...prevMessages ]);
-     
-      
+      setAllMessages((prevMessages) => [...prevMessages, newMessage]);
+    
     } catch (err) {
       console.log("Error sending file:", err);
       setFileLoading(false); 
     }
   };
+
+
+  const loadMoreMessages = () => {
+    const startIdx = allMessages.length - (currentPage + 1) * 10;
+    const endIdx = allMessages.length - currentPage * 10;
+    console.log("Loading", startIdx, " end index", endIdx );
+    const nextPageMessages = allMessages.slice(Math.max(startIdx, 0), endIdx);
+    console.log("nex page msg", nextPageMessages);
+    setMessages((prevMessages) => [...nextPageMessages, ...prevMessages]);
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+  
 
 
     if (!isClient || loading) {
@@ -330,7 +352,23 @@ const fetchMessages =  useCallback( async(_conversationId, receiverDetails ) => 
             style={{ height: "70vh" }}
             className="w-full overflow-y-scroll shadow-sm m-auto p-2">
 
-
+{messages.length === 0 && (
+              <div className="text-center text-gray-400 my-2">
+                <p className="font-light">No messages yet</p>
+              </div>
+            )}
+              {messages.length > 0 && (
+              <div className="text-center my-2">
+                <button
+                  onClick={loadMoreMessages}
+                  className="text-blue-500 font-semibold"
+                >
+                  Load More
+                </button>
+              </div>
+            )}
+            
+            
             {
               Array.isArray(messages) &&
               messages.map((msg, index) => {
