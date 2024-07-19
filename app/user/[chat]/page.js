@@ -349,14 +349,15 @@ const fetchMessages =  useCallback( async(_conversationId, receiverDetails ) => 
             </div>
           
           <div
-            style={{ height: "70vh" }}
+            style={{ height: "70vh", backgroundImage: "url('/background.jpg')", backgroundSize: 'cover',}}
             className="w-full overflow-y-scroll shadow-sm m-auto p-2">
 
-{messages.length === 0 && (
+            {messages.length === 0 && (
               <div className="text-center text-gray-400 my-2">
                 <p className="font-light">No messages yet</p>
               </div>
             )}
+
               {messages.length > 0 && (
               <div className="text-center my-2">
                 <button
